@@ -73,12 +73,16 @@ Ext.define('CustomApp', {
         ];
 
         async.map( configs, this.wsapiQuery, function(err,results) {
+            console.log("results: ", results);
+            
             // create the custom renderer
             // var type = results[1][0].get("TypePath");  // PortfolioItem/Initiative
             app.featureType = results[1][0].get("TypePath"); // lowest level item
             app.releaseType = results[2][0].get("TypePath"); // lowest level item
             app.openProjectIDs = _.map( results[3],function(project) { return project.get("ObjectID");});
             console.log("closed projects:",app.openProjectIDs);
+            console.log("Features: ", app.featureType);
+            
             app.renderer = Ext.create("ComponentRenderer", {
                 estimatevalues: results[0]
             });
@@ -112,7 +116,8 @@ Ext.define('CustomApp', {
             { locked : true, text: 'ID',   dataIndex: 'FormattedID', width : 45,sortable:false },
             { locked : true, text: 'Name', dataIndex: 'Name', width : 200,sortable:false },  
             { locked : true, text: 'AnchorCoreOther', dataIndex: 'c_AnchorCoreOther', width : 65,sortable:false },  
-            { locked : true, text: 'State', dataIndex: 'State', renderer : app.renderer.renderState,sortable:false },  
+            { locked : true, text: 'State', dataIndex: 'State', renderer : app.renderer.renderState,sortable:false },
+            { locked : true, text: 'Refined PEst', dataIndex: 'RefinedEstimate', width : 85, renderer : app.renderer.renderPreliminaryEstimate, sortable:false },
             { locked : true, text: 'Feature PEst', dataIndex: 'PreliminaryEstimate', width : 85, renderer : app.renderer.renderPreliminaryEstimate, sortable:false },
             { locked : true, text: 'S Team<br/>Story Pts', dataIndex: 'LeafStoryPlanEstimateTotal', width : 85,sortable:false},
             { locked : true, text: 'S Team<br/>Story Cnt', dataIndex: 'LeafStoryCount', width : 85, sortable:false}
