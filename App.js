@@ -73,15 +73,15 @@ Ext.define('CustomApp', {
         ];
 
         async.map( configs, this.wsapiQuery, function(err,results) {
-            console.log("results: ", results);
+            //console.log("results: ", results);
             
             // create the custom renderer
             // var type = results[1][0].get("TypePath");  // PortfolioItem/Initiative
             app.featureType = results[1][0].get("TypePath"); // lowest level item
             app.releaseType = results[2][0].get("TypePath"); // lowest level item
             app.openProjectIDs = _.map( results[3],function(project) { return project.get("ObjectID");});
-            console.log("closed projects:",app.openProjectIDs);
-            console.log("Features: ", app.featureType);
+            //console.log("closed projects:",app.openProjectIDs);
+            //console.log("Features: ", app.featureType);
             
             app.renderer = Ext.create("ComponentRenderer", {
                 estimatevalues: results[0]
@@ -102,7 +102,7 @@ Ext.define('CustomApp', {
         console.log("release selected");
         var timeboxScope = app.getContext().getTimeboxScope();
         console.log("timeboxscope",timeboxScope);
-        if(timeboxScope!=null) {
+        if(timeboxScope !== null) {
             var record = timeboxScope.getRecord();
             var name = record.get('Name');
             app.releaseName = name;
@@ -117,7 +117,7 @@ Ext.define('CustomApp', {
             { locked : true, text: 'Name', dataIndex: 'Name', width : 200,sortable:false },  
             { locked : true, text: 'AnchorCoreOther', dataIndex: 'c_AnchorCoreOther', width : 65,sortable:false },  
             { locked : true, text: 'State', dataIndex: 'State', renderer : app.renderer.renderState,sortable:false },
-            { locked : true, text: 'Refined PEst', dataIndex: 'RefinedEstimate', width : 85, renderer : app.renderer.renderPreliminaryEstimate, sortable:false },
+            //{ locked : true, text: 'Refined PEst', dataIndex: 'RefinedEstimate', width : 85, renderer : app.renderer.renderRefinedEstimate, sortable:false },
             { locked : true, text: 'Feature PEst', dataIndex: 'PreliminaryEstimate', width : 85, renderer : app.renderer.renderPreliminaryEstimate, sortable:false },
             { locked : true, text: 'S Team<br/>Story Pts', dataIndex: 'LeafStoryPlanEstimateTotal', width : 85,sortable:false},
             { locked : true, text: 'S Team<br/>Story Cnt', dataIndex: 'LeafStoryCount', width : 85, sortable:false}
@@ -142,7 +142,7 @@ Ext.define('CustomApp', {
 
     // generic function to perform a web services query    
     wsapiQuery : function( config , callback ) {
-        console.log("config:",config,_.contains(_.keys(config),"context"));
+        //console.log("config:",config,_.contains(_.keys(config),"context"));
         Ext.create('Rally.data.WsapiDataStore', {
             autoLoad : true,
             limit : "Infinity",
@@ -163,7 +163,7 @@ Ext.define('CustomApp', {
     // called when the set of portfolio items has been loaded, for each item it will then read its
     // children and set them in a property called "Requiremnts"
     featuresLoaded : function(items) {
-        console.log("items",items.data.items.length);
+        //console.log("items",items.data.items.length);
         var features = items.data.items;
         // asynchronous function to read the children collection
         var loadChildren = function(child,callback) {
@@ -174,7 +174,7 @@ Ext.define('CustomApp', {
                     records = _.filter(records,function(record){ 
                         return _.contains(app.openProjectIDs, record.get("Project").ObjectID);
                     });
-                    // console.log("records",records);
+                    //console.log("records:: ",records);
                     callback(null,records);
                 }
             });
@@ -209,6 +209,18 @@ Ext.define('CustomApp', {
                 locked : true,
                 align : 'right'
             }));
+            
+            app.renderer.getColumns().push( Ext.create('Ext.grid.column.Column',{
+                renderType : "renderTotalComponentValueRefinedEstimate",
+                text: name + 'Refined Est', 
+                dataIndex : "Requirements",
+                renderer : app.renderer.renderTotalComponentValueRefinedEstimate,
+                cls : 'component-color',
+                width : 85,
+                sortable:false,
+                locked : true,
+                align : 'right'
+            }));
         }
 
     },
@@ -216,7 +228,7 @@ Ext.define('CustomApp', {
     // extract the set of unique project names
     addComponentNames : function(requirements) {
 
-        var projectNames = _.uniq(_.map(requirements,function(r) { return r.get("Project").Name}));
+        var projectNames = _.uniq(_.map(requirements,function(r) { return r.get("Project").Name;}));
         _.each(projectNames,function(name) {
 
             if (_.indexOf(app.componentNames,name)==-1 ) {
@@ -280,11 +292,11 @@ Ext.define('CustomApp', {
                 var f = Ext.create('Rally.data.wsapi.Filter', {
                     property: 'Parent.FormattedID', operator: '=', value: parentId.replace(/^\s+|\s+$/g,'') } 
                 );
-                filter = (i==0) ? f : filter.or(f);
+                filter = (i===0) ? f : filter.or(f);
             }
         });
 
-        console.log("filter:",filter.toString());
+        //console.log("filter:",filter.toString());
         if (_.isNull(app.store)||_.isUndefined(app.store)) {
 
             app.store = Ext.create('Rally.data.WsapiDataStore', {
@@ -309,7 +321,7 @@ Ext.define('CustomApp', {
             title: 'Features',
             listeners : {
                 afterrender : function() {
-                    console.log("grid rendered");
+                    //console.log("grid rendered");
                 }
             },
             store: app.store,

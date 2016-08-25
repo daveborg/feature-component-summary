@@ -1,4 +1,4 @@
-                // Derived and simplified from example on bryntum.com
+// Derived and simplified from example on bryntum.com
 Ext.define("ComponentRenderer", function() {
 
     var self;
@@ -19,14 +19,27 @@ Ext.define("ComponentRenderer", function() {
         // have to add the colIdx to the count of locked columns
         offsetColumnIndex : function(col,colIdx) {
             var cols = _.filter(col.getColumns(),function(c) { 
-                return c.locked == true;
+                return c.locked === true;
             });
 
             return cols.length + colIdx;
         },
 
         renderPreliminaryEstimate : function(value) { 
-            return value ? value._refObjectName + " (" + self.pointValue(value)+")" : ""; 
+            var _localValue = value ? value._refObjectName + " (" + self.pointValue(value)+")" : ""; 
+            
+            //console.log("_localValue2: ", _localValue);
+            
+            return _localValue;
+        },
+        
+        //added by db to add refined estimates to the grid 
+        renderRefinedEstimate : function(value) { 
+            var _localValue = value ? value._refObjectName + " (" + self.pointValue(value)+")" : ""; 
+            
+            //console.log("_localValue: ", value);
+            
+            return "Testing 1 2 3";
         },
 
         renderState : function(value) { 
@@ -40,7 +53,7 @@ Ext.define("ComponentRenderer", function() {
             var name = self.getColumns()[idx].project;
             var reqs = _.filter(value,function(r) {
                 return r.get("Project").Name === name; 
-            })
+            });
             var val = reqs ? 
                 _.reduce( reqs, function(memo,r) { 
                     return memo + r.get("LeafStoryPlanEstimateTotal");
@@ -52,13 +65,22 @@ Ext.define("ComponentRenderer", function() {
             var val = value ? self.sumRequirementEstimates(value) : 0;
             return val !== 0 ? val : "";
         },
+        
+        
+        //db added
+        renderTotalComponentValueRefinedEstimate : function(value, metaData, record, rowIdx, colIdx, store, view) {
+            //console.log("sum value:: ", value);
+            
+            var val = value ? self.sumRequirementRefinedEstimates(value) : 0;
+            return val !== 0 ? val : "";
+        },
 
         renderWorkRemaining : function(value, metaData, record, rowIdx, colIdx, store, view) {
             var idx = self.offsetColumnIndex(self,colIdx);
             var name = self.getColumns()[idx].project;
             var reqs = _.filter(value,function(r) {
                 return r.get("Project").Name === name; 
-            })
+            });
             var val = reqs ? 
                 _.reduce( reqs, function(memo,r) { 
                     var accepted = r.get("AcceptedLeafStoryPlanEstimateTotal");
@@ -83,7 +105,7 @@ Ext.define("ComponentRenderer", function() {
             var name = self.getColumns()[idx].project;
             var reqs = _.filter(value,function(r) {
                 return r.get("Project").Name === name; 
-            })
+            });
             var val = reqs ? self.sumRequirementEstimates(reqs) : 0;
             return val !== 0 ? val : "";
         },
@@ -109,8 +131,16 @@ Ext.define("ComponentRenderer", function() {
             return _.reduce( reqs, function(memo,r) { 
                 return memo + self.pointValueForEstimate(r);
             }, 0 );
-        }
-    }
+        },
+
+        sumRequirementRefinedEstimates : function(reqs) {
+			var rEsts = reqs.map(function(a) {return a.get("RefinedEstimate");});
+			
+			return rEsts.reduce(function(a, b) { return a + b; }, 0);
+        },
+                
+        
+    };
 
 });
 
@@ -174,7 +204,7 @@ Ext.define("GridExporter", {
         }
         
 
-        if (fieldData == null || fieldData == undefined) {
+        if (fieldData === null || fieldData === undefined) {
             text = '';
 
         } else if (fieldData._refObjectName && !fieldData.getMonth) {
@@ -202,7 +232,7 @@ Ext.define("GridExporter", {
     // have to add the colIdx to the count of locked columns
     fixedColumnCount : function(columns) {
         var cols = _.filter(columns,function(c) { 
-            return c!==undefined && c!==null && c.locked == true;
+            return c!==undefined && c!==null && c.locked === true;
         });
         return cols.length;
     },
@@ -263,7 +293,7 @@ Ext.define("GridExporter", {
         var that = this;
         // Ext.Array.each(cols, function(col, index) {
         Ext.Array.each(sortedCols, function(col, index) { 
-            if (col.hidden != true) {
+            if (col.hidden !== true) {
                 // fix the issue with the "SYLK" warning in excel by prepending "Item" to the ID column
                 var colLabel = (index === 0 ? "Item " : "") + col.text;
                 colLabel = colLabel.replace(/<br\/?>/,'');
@@ -279,7 +309,7 @@ Ext.define("GridExporter", {
 
                 var index = headerIndex[col.text];
             
-                if (col.hidden != true) {
+                if (col.hidden !== true) {
                     var fieldName   = col.dataIndex;
                     var text        = record.get(fieldName);
                     data += that._getFieldTextAndEscape(text,record,col,index) + ',';
@@ -297,7 +327,7 @@ Ext.define("GridExporter", {
         var cols            = grid.columns;
 
         Ext.Array.each(cols, function(col, colIndex) {
-            if (col.hidden != true) {
+            if (col.hidden !== true) {
                 
                 sheet.cells(1,colIndex + 1).value = col.text;
             }
@@ -308,7 +338,7 @@ Ext.define("GridExporter", {
             var entry   = record.getData();
 
             Ext.Array.each(cols, function(col, colIndex) {
-                if (col.hidden != true) {
+                if (col.hidden !== true) {
                     var fieldName   = col.dataIndex;
                     var text        = entry[fieldName];
                     var value       = that._getFieldText(text);
@@ -331,12 +361,12 @@ Ext.define("GridExporter", {
                 return;
             }
 
-            xlBook.worksheets("Sheet1").activate;
+            var temp1 = xlBook.worksheets("Sheet1").activate;
             var XlSheet = xlBook.activeSheet;
             xlApp.visible = true; 
 
            this._ieGetGridData(grid, XlSheet);
-           XlSheet.columns.autofit; 
+           var temp2 = XlSheet.columns.autofit; 
         }
     }
 });
