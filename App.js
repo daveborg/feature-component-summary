@@ -37,9 +37,9 @@ Ext.define('CustomApp', {
                 label : "Parent Portfolio Item ID"
             },
             {
-                name: 'filter',
-                xtype: 'rallytextfield',
-                label : "Filter"
+                name: 'filterWithdrawn',
+                xtype: 'rallycheckboxfield',
+                label: 'Exclude Withdrawn Epics'
             },
             {
                 name: 'showStoryColumns',
@@ -299,6 +299,7 @@ Ext.define('CustomApp', {
 
         // check for configured parent id
         var parentIds = app.getSetting('parentId');
+        var filterWithdrawn = app.getSetting('filterWithdrawn');
         app.showStoryColumns = app.getSetting('showStoryColumns');
         var filter = [];
 
@@ -312,6 +313,20 @@ Ext.define('CustomApp', {
                 filter = (i===0) ? f : filter.or(f);
             }
         });
+        
+        // TELSTRA SPECIFIC CODE
+        // Filter out any Epic with the custom field c_WithdrawnONHOLD == TRUE
+        
+		if (filterWithdrawn) {
+			console.log("Apply Withdrawn filter");
+		
+			var f = Ext.create('Rally.data.wsapi.Filter', {
+				property: 'c_WithdrawnONHOLD', operator: '!=', value: 'TRUE' } 
+			);
+			filter = (filter.length===0) ? f : filter.or(f);
+		};
+        
+        
 
         //console.log("filter:",filter.toString());
         if (_.isNull(app.store)||_.isUndefined(app.store)) {

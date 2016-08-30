@@ -5,8 +5,14 @@ feature-component-summary
 
 Rolls up child portfolio item preliminary estimates, grouping by project.
 
-![alt text](https://raw.github.com/wrackzone/feature-component-summary/master/screenshot.png "Screenshot")
+Customised for Telstra:
+* Adds a column to sum the Refined Estimate of Features
+* Adds a column for count of Features under each Epic
+* Optional filter on Epics that are withdrawn. Based on a custom field. 
 
+Requires the boolean field c_WithdrawnONHOLD to be present on Epics. 
+
+![alt text](https://raw.github.com/wrackzone/feature-component-summary/master/screenshot.png "Screenshot")
 
 
 ## License
