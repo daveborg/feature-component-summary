@@ -74,6 +74,13 @@ Ext.define("ComponentRenderer", function() {
             var val = value ? self.sumRequirementRefinedEstimates(value) : 0;
             return val !== 0 ? val : "";
         },
+        
+        renderCountFeatures : function(value, metaData, record, rowIdx, colIdx, store, view) {
+            //console.log("sum value.length:: ", value.length);
+            
+            //var val = value ? self.sumRequirementRefinedEstimates(value) : 0;
+            return value.length;
+        },
 
         renderWorkRemaining : function(value, metaData, record, rowIdx, colIdx, store, view) {
             var idx = self.offsetColumnIndex(self,colIdx);

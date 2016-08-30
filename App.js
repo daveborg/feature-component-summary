@@ -37,6 +37,11 @@ Ext.define('CustomApp', {
                 label : "Parent Portfolio Item ID"
             },
             {
+                name: 'filter',
+                xtype: 'rallytextfield',
+                label : "Filter"
+            },
+            {
                 name: 'showStoryColumns',
                 xtype: 'rallycheckboxfield',
                 label: 'Show Story Columns'
@@ -115,7 +120,7 @@ Ext.define('CustomApp', {
          return [
             { locked : true, text: 'ID',   dataIndex: 'FormattedID', width : 45,sortable:false },
             { locked : true, text: 'Name', dataIndex: 'Name', width : 200,sortable:false },  
-            { locked : true, text: 'AnchorCoreOther', dataIndex: 'c_AnchorCoreOther', width : 65,sortable:false },  
+            //{ locked : true, text: 'AnchorCoreOther', dataIndex: 'c_AnchorCoreOther', width : 65,sortable:false },  
             { locked : true, text: 'State', dataIndex: 'State', renderer : app.renderer.renderState,sortable:false },
             //{ locked : true, text: 'Refined PEst', dataIndex: 'RefinedEstimate', width : 85, renderer : app.renderer.renderRefinedEstimate, sortable:false },
             { locked : true, text: 'Feature PEst', dataIndex: 'PreliminaryEstimate', width : 85, renderer : app.renderer.renderPreliminaryEstimate, sortable:false },
@@ -215,6 +220,18 @@ Ext.define('CustomApp', {
                 text: name + 'Refined Est', 
                 dataIndex : "Requirements",
                 renderer : app.renderer.renderTotalComponentValueRefinedEstimate,
+                cls : 'component-color',
+                width : 85,
+                sortable:false,
+                locked : true,
+                align : 'right'
+            }));
+            
+            app.renderer.getColumns().push( Ext.create('Ext.grid.column.Column',{
+                renderType : "renderCountFeatures",
+                text: name + 'Feature Count', 
+                dataIndex : "Requirements",
+                renderer : app.renderer.renderCountFeatures,
                 cls : 'component-color',
                 width : 85,
                 sortable:false,

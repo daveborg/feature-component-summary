@@ -84,6 +84,13 @@ Ext.define("ComponentRenderer", function() {
             var val = value ? self.sumRequirementRefinedEstimates(value) : 0;
             return val !== 0 ? val : "";
         },
+        
+        renderCountFeatures : function(value, metaData, record, rowIdx, colIdx, store, view) {
+            //console.log("sum value.length:: ", value.length);
+            
+            //var val = value ? self.sumRequirementRefinedEstimates(value) : 0;
+            return value.length;
+        },
 
         renderWorkRemaining : function(value, metaData, record, rowIdx, colIdx, store, view) {
             var idx = self.offsetColumnIndex(self,colIdx);
@@ -497,7 +504,7 @@ Ext.define('CustomApp', {
          return [
             { locked : true, text: 'ID',   dataIndex: 'FormattedID', width : 45,sortable:false },
             { locked : true, text: 'Name', dataIndex: 'Name', width : 200,sortable:false },  
-            { locked : true, text: 'AnchorCoreOther', dataIndex: 'c_AnchorCoreOther', width : 65,sortable:false },  
+            //{ locked : true, text: 'AnchorCoreOther', dataIndex: 'c_AnchorCoreOther', width : 65,sortable:false },  
             { locked : true, text: 'State', dataIndex: 'State', renderer : app.renderer.renderState,sortable:false },
             //{ locked : true, text: 'Refined PEst', dataIndex: 'RefinedEstimate', width : 85, renderer : app.renderer.renderRefinedEstimate, sortable:false },
             { locked : true, text: 'Feature PEst', dataIndex: 'PreliminaryEstimate', width : 85, renderer : app.renderer.renderPreliminaryEstimate, sortable:false },
@@ -597,6 +604,18 @@ Ext.define('CustomApp', {
                 text: name + 'Refined Est', 
                 dataIndex : "Requirements",
                 renderer : app.renderer.renderTotalComponentValueRefinedEstimate,
+                cls : 'component-color',
+                width : 85,
+                sortable:false,
+                locked : true,
+                align : 'right'
+            }));
+            
+            app.renderer.getColumns().push( Ext.create('Ext.grid.column.Column',{
+                renderType : "renderCountFeatures",
+                text: name + 'Feature Count', 
+                dataIndex : "Requirements",
+                renderer : app.renderer.renderCountFeatures,
                 cls : 'component-color',
                 width : 85,
                 sortable:false,
