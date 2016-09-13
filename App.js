@@ -321,14 +321,14 @@ Ext.define('CustomApp', {
 			console.log("Apply Withdrawn filter");
 		
 			var f = Ext.create('Rally.data.wsapi.Filter', {
-				property: 'c_WithdrawnONHOLD', operator: '!=', value: 'TRUE' } 
+				property: 'c_WithdrawnONHOLD', operator: '!=', value: true } 
 			);
-			filter = (filter.length===0) ? f : filter.or(f);
+			filter = (filter.length===0) ? f : filter.and(f);
 		};
         
         
 
-        //console.log("filter:",filter.toString());
+        console.log("filter:",filter.toString());
         if (_.isNull(app.store)||_.isUndefined(app.store)) {
 
             app.store = Ext.create('Rally.data.WsapiDataStore', {
@@ -348,6 +348,8 @@ Ext.define('CustomApp', {
                 filters : filter
             });
         }
+
+		console.log("filter:",filter.toString());
 
         app.grid = Ext.create('Ext.grid.Panel', {
             title: 'Features',
