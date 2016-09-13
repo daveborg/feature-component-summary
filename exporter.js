@@ -209,6 +209,14 @@ Ext.define("GridExporter", {
             text = app.renderer.renderTotalComponentValuePreliminaryEstimate (fieldData,0,record,0,index);
             return text;
         }
+        if (col && col.renderType === "renderTotalComponentValueRefinedEstimate") {
+            text = app.renderer.renderTotalComponentValueRefinedEstimate (fieldData,0,record,0,index);
+            return text;
+        }
+        if (col && col.renderType === "renderCountFeatures") {
+            text = app.renderer.renderCountFeatures (fieldData,0,record,0,index);
+            return text;
+        }
         
 
         if (fieldData === null || fieldData === undefined) {
